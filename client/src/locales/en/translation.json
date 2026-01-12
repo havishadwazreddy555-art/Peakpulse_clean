@@ -1,0 +1,18 @@
+{
+    "dashboard": "Dashboard",
+    "activities": "Activities",
+    "addActivity": "Add Activity",
+    "logout": "Logout",
+    "air": "Air Sports",
+    "water": "Water Sports",
+    "land": "Land Sports",
+    "date": "Date",
+    "location": "Location",
+    "height": "Height",
+    "depth": "Depth",
+    "distance": "Distance",
+    "notes": "Notes",
+    "save": "Save",
+    "cancel": "Cancel",
+    "adminReset": "Reset Demo Data"
+}

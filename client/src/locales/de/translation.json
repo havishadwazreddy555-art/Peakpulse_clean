@@ -1,0 +1,18 @@
+{
+    "dashboard": "Armaturenbrett",
+    "activities": "Aktivitäten",
+    "addActivity": "Aktivität hinzufügen",
+    "logout": "Abmelden",
+    "air": "Luftsport",
+    "water": "Wassersport",
+    "land": "Landsport",
+    "date": "Datum",
+    "location": "Ort",
+    "height": "Höhe",
+    "depth": "Tiefe",
+    "distance": "Entfernung",
+    "notes": "Notizen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "adminReset": "Demo zurücksetzen"
+}

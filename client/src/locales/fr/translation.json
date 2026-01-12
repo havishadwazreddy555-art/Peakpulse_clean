@@ -1,0 +1,18 @@
+{
+    "dashboard": "Tableau de bord",
+    "activities": "Activités",
+    "addActivity": "Ajouter activité",
+    "logout": "Déconnexion",
+    "air": "Sports aériens",
+    "water": "Sports nautiques",
+    "land": "Sports terrestres",
+    "date": "Date",
+    "location": "Lieu",
+    "height": "Hauteur",
+    "depth": "Profondeur",
+    "distance": "Distance",
+    "notes": "Remarques",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "adminReset": "Réinitialiser démo"
+}

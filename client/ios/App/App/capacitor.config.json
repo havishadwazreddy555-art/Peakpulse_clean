@@ -1,0 +1,6 @@
+{
+	"appId": "com.peakpulse.app",
+	"appName": "PeakPulse",
+	"webDir": "dist",
+	"packageClassList": []
+}

@@ -1,0 +1,89 @@
+const express = require('express');
+const db = require('../db');
+const authMiddleware = require('../middleware/authMiddleware');
+
+const router = express.Router();
+
+// Get all activities for user
+router.get('/', authMiddleware, async (req, res) => {
+    try {
+        const text = 'SELECT * FROM activities WHERE user_id = $1 ORDER BY date DESC, time DESC';
+        const result = await db.query(text, [req.user.id]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Create activity
+router.post('/', authMiddleware, async (req, res) => {
+    const { date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature } = req.body;
+
+    if (!date || !sport_type) {
+        return res.status(400).json({ error: 'Date and sport type are required' });
+    }
+
+    const insertTime = time || '00:00';
+
+    try {
+        const text = `
+      INSERT INTO activities (user_id, date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+      RETURNING id
+    `;
+        const values = [req.user.id, date, insertTime, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature];
+
+        const result = await db.query(text, values);
+        res.status(201).json({ id: result.rows[0].id, ...req.body });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update activity
+router.put('/:id', authMiddleware, async (req, res) => {
+    const { date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature } = req.body;
+    const { id } = req.params;
+
+    try {
+        const text = `
+      UPDATE activities 
+      SET date = $1, time = $2, location = $3, latitude = $4, longitude = $5, height = $6, depth = $7, distance = $8, sport_type = $9, notes = $10, jump_number = $11, total_jumps = $12, freefall_time = $13, total_freefall_time = $14, tunnel_time = $15, skill_level = $16, dive_number = $17, visibility = $18, bottom_time = $19, signature = $20
+      WHERE id = $21 AND user_id = $22
+    `;
+        const values = [date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature, id, req.user.id];
+
+        const result = await db.query(text, values);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Activity not found or unauthorized' });
+        }
+
+        res.json({ message: 'Activity updated' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete activity
+router.delete('/:id', authMiddleware, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await db.query('DELETE FROM activities WHERE id = $1 AND user_id = $2', [id, req.user.id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Activity not found or unauthorized' });
+        }
+
+        res.json({ message: 'Activity deleted' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+module.exports = router;
