@@ -50,17 +50,7 @@ export default function Login() {
         }
     };
 
-    const handleGuest = async () => {
-        try {
-            const res = await fetch(getApiUrl('/api/auth/guest'), { method: 'POST' });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
-            login(data.token, data.user);
-            navigate('/');
-        } catch (err) {
-            setError('Guest login failed');
-        }
-    };
+
 
     return (
         <div className="flex items-center justify-center p-4" style={{
@@ -123,7 +113,7 @@ export default function Login() {
 
                 <div className="flex flex-col gap-3">
                     <Link to="/register" className="btn btn-outline text-center" style={{ textDecoration: 'none' }}>Register New Account</Link>
-                    <button onClick={handleGuest} className="btn btn-ghost" style={{ fontSize: '0.9rem', opacity: 0.8 }}>Continue as Guest</button>
+
                 </div>
             </div>
         </div>
