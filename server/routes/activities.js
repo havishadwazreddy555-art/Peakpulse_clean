@@ -17,8 +17,9 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Create activity
+// Create activity
 router.post('/', authMiddleware, async (req, res) => {
-    const { date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature } = req.body;
+    const { date, time, location, latitude, longitude, height, depth, distance, total_distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, total_tunnel_time, skill_level, dive_number, visibility, bottom_time, total_bottom_time, signature } = req.body;
 
     if (!date || !sport_type) {
         return res.status(400).json({ error: 'Date and sport type are required' });
@@ -28,11 +29,11 @@ router.post('/', authMiddleware, async (req, res) => {
 
     try {
         const text = `
-      INSERT INTO activities (user_id, date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+      INSERT INTO activities (user_id, date, time, location, latitude, longitude, height, depth, distance, total_distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, total_tunnel_time, skill_level, dive_number, visibility, bottom_time, total_bottom_time, signature)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
       RETURNING id
     `;
-        const values = [req.user.id, date, insertTime, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature];
+        const values = [req.user.id, date, insertTime, location, latitude, longitude, height, depth, distance, total_distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, total_tunnel_time, skill_level, dive_number, visibility, bottom_time, total_bottom_time, signature];
 
         const result = await db.query(text, values);
         res.status(201).json({ id: result.rows[0].id, ...req.body });
@@ -44,16 +45,16 @@ router.post('/', authMiddleware, async (req, res) => {
 
 // Update activity
 router.put('/:id', authMiddleware, async (req, res) => {
-    const { date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature } = req.body;
+    const { date, time, location, latitude, longitude, height, depth, distance, total_distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, total_tunnel_time, skill_level, dive_number, visibility, bottom_time, total_bottom_time, signature } = req.body;
     const { id } = req.params;
 
     try {
         const text = `
       UPDATE activities 
-      SET date = $1, time = $2, location = $3, latitude = $4, longitude = $5, height = $6, depth = $7, distance = $8, sport_type = $9, notes = $10, jump_number = $11, total_jumps = $12, freefall_time = $13, total_freefall_time = $14, tunnel_time = $15, skill_level = $16, dive_number = $17, visibility = $18, bottom_time = $19, signature = $20
-      WHERE id = $21 AND user_id = $22
+      SET date = $1, time = $2, location = $3, latitude = $4, longitude = $5, height = $6, depth = $7, distance = $8, total_distance = $9, sport_type = $10, notes = $11, jump_number = $12, total_jumps = $13, freefall_time = $14, total_freefall_time = $15, tunnel_time = $16, total_tunnel_time = $17, skill_level = $18, dive_number = $19, visibility = $20, bottom_time = $21, total_bottom_time = $22, signature = $23
+      WHERE id = $24 AND user_id = $25
     `;
-        const values = [date, time, location, latitude, longitude, height, depth, distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, skill_level, dive_number, visibility, bottom_time, signature, id, req.user.id];
+        const values = [date, time, location, latitude, longitude, height, depth, distance, total_distance, sport_type, notes, jump_number, total_jumps, freefall_time, total_freefall_time, tunnel_time, total_tunnel_time, skill_level, dive_number, visibility, bottom_time, total_bottom_time, signature, id, req.user.id];
 
         const result = await db.query(text, values);
 

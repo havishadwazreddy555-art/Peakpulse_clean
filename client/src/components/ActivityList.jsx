@@ -38,6 +38,7 @@ export default function ActivityList({ activities, onDelete }) {
                         <th className="p-4">Location</th>
                         <th className="p-4">Details</th>
                         <th className="p-4">Notes</th>
+                        <th className="p-4">Signature</th>
                         <th className="p-4 actions">Actions</th>
                     </tr>
                 </thead>
@@ -90,7 +91,9 @@ export default function ActivityList({ activities, onDelete }) {
                                 </td>
                                 <td className="p-4 text-sm opacity-70" style={{ maxWidth: '200px' }}>
                                     {act.notes}
-                                    {act.signature && <div style={{ marginTop: '0.25rem', fontStyle: 'italic' }}>Sig: {act.signature}</div>}
+                                </td>
+                                <td className="p-4 text-sm font-mono opacity-80">
+                                    {act.signature || '-'}
                                 </td>
                                 <td className="p-4">
                                     <button
