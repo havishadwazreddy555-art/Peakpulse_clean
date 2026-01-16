@@ -7,6 +7,7 @@ import { getApiUrl } from '../config';
 export default function Login() {
     const [id, setId] = useState(''); // ID = Phone
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState(null);
     const { login } = useAuth();
@@ -84,12 +85,21 @@ export default function Login() {
                         <label className="text-sm">Password</label>
                         <input
                             className="input"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="Enter your password"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             required
                         />
+                        <div className="flex items-center gap-2 mt-2">
+                            <input
+                                type="checkbox"
+                                id="showPass"
+                                checked={showPassword}
+                                onChange={e => setShowPassword(e.target.checked)}
+                            />
+                            <label htmlFor="showPass" className="text-xs cursor-pointer opacity-70">Show Password</label>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2">

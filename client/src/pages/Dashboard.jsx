@@ -14,9 +14,13 @@ export default function Dashboard() {
     const [selectedSport, setSelectedSport] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false); // New state for saving loader
 
     // Delete Modal State
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+
+    // Disclaimer Modal State - Show on load
+    const [showDisclaimer, setShowDisclaimer] = useState(true);
 
     const fetchActivities = async () => {
         try {
@@ -40,22 +44,37 @@ export default function Dashboard() {
     }, []);
 
     const handleSave = async (activity) => {
+        setIsSaving(true);
+        // Minimum loading time of 2s to show the cool animation
+        const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
+
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(getApiUrl('/api/activities'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(activity)
-            });
+            const [res] = await Promise.all([
+                fetch(getApiUrl('/api/activities'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(activity)
+                }),
+                minLoadTime
+            ]);
+
             if (res.ok) {
                 setShowForm(false);
                 fetchActivities();
+            } else {
+                const errData = await res.json();
+                alert(`Error saving activity: ${errData.error || 'Unknown error'}`);
+                console.error("Save failed:", errData);
             }
         } catch (err) {
             console.error(err);
+            alert("Network error: Failed to save activity. Please check your connection.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -69,13 +88,20 @@ export default function Dashboard() {
         if (!deleteConfirm.id) return;
         try {
             const token = localStorage.getItem('token');
-            await fetch(getApiUrl(`/api/activities/${deleteConfirm.id}`), {
+            const res = await fetch(getApiUrl(`/api/activities/${deleteConfirm.id}`), {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            fetchActivities();
+
+            if (res.ok) {
+                fetchActivities();
+            } else {
+                const errData = await res.json();
+                alert(`Error deleting activity: ${errData.error || 'Unknown error'}`);
+            }
         } catch (err) {
             console.error(err);
+            alert("Network error: Failed to delete activity.");
         } finally {
             setDeleteConfirm({ show: false, id: null });
         }
@@ -333,6 +359,64 @@ export default function Dashboard() {
                             </button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* DISCLAIMER MODAL */}
+            {showDisclaimer && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200
+                }}>
+                    <div className="card animate-scale-in" style={{ maxWidth: '400px', width: '90%', padding: '2rem', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div className="flex justify-center mb-4">
+                            <AlertTriangle size={48} className="text-yellow-400" style={{ color: '#facc15' }} />
+                        </div>
+                        <h3 className="text-xl font-bold mb-4">Important Note</h3>
+                        <p style={{ marginBottom: '2rem', opacity: 0.9, lineHeight: '1.6' }}>
+                            All entered data is for your <strong>personal reference only</strong>.
+                        </p>
+
+                        <button
+                            onClick={() => setShowDisclaimer(false)}
+                            className="btn btn-primary"
+                            style={{ width: '100%', padding: '1rem' }}
+                        >
+                            I Understand
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* LOADING OVERLAY - Parachute Animation */}
+            {isSaving && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 300
+                }}>
+                    <div style={{ position: 'relative', width: '120px', height: '120px' }}>
+                        {/* Spinning dashed circle */}
+                        <div className="animate-spin-slow" style={{
+                            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                            border: '2px dashed rgba(56, 189, 248, 0.3)', borderRadius: '50%'
+                        }}></div>
+
+                        {/* Parachute / Skydiver Image */}
+                        <img
+                            src="/skydiving_logo.jpg"
+                            alt="Saving..."
+                            className="animate-float"
+                            style={{
+                                width: '80px', height: '80px',
+                                position: 'absolute', top: '20px', left: '20px',
+                                objectFit: 'contain', borderRadius: '50%',
+                                filter: 'drop-shadow(0 0 10px rgba(56, 189, 248, 0.5))'
+                            }}
+                        />
+                    </div>
+                    <h3 className="text-xl font-bold mt-8 text-[#38bdf8] animate-pulse">Saving Activity...</h3>
                 </div>
             )}
         </div>
